@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Movie Website</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<style>
+p {
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  font-style: italic;
+}
+p {
+  letter-spacing: 3px;
+}
+
+
+</style>
+<body>
+    <h2>Movie Search</h2>
+
+    <input type="text" id="search" placeholder="Search for a movie...">
+    <button onclick="searchMovie()">Search</button>
+    
+    <div id="result"></div>
+    
+
+   
+<script>
+function showDescription(movie) {
+  var x = document.getElementById(movie);
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+    <div class="container">
+        <h1 class="text-center my-4">B Movies</h1>
+        <div id="movies" class="row"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    fetch('https://api.themoviedb.org/3/movie/popular?api_key=54952b05094d0802b2e9c353a4b577e3')
+        .then(response => response.json())
+        .then(data => displayMovies(data.results))
+        .catch(error => console.error(error));
+});
+// Fetch movie data
+function getMovieData() {
+  const url = 'https://api.themoviedb.org/3/movie/{movie_id}?api_key={54952b05094d0802b2e9c353a4b577e3}&append_to_response=credits';
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      displayMovieData(data);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Display movie data
+function displayMovieData(data) {
+  const movieTitle = data.title;
+  const releaseYear = data.release_date.split('-')[0];
+  const cast = data.credits.cast;
+
+  // Display movie title and release year
+  document.getElementById('movieTitle').textContent = movieTitle;
+  document.getElementById('releaseYear').textContent = releaseYear;
+
+  // Display cast
+  let castList = document.getElementById('castList');
+  castList.innerHTML = ''; // Clear the list
+  for (let i = 0; i < cast.length; i++) {
+    let listItem = document.createElement('li');
+    listItem.textContent = cast[i].name;
+    castList.appendChild(listItem);
+  }
+}
+
+// Add event listener to movie elements
+document.querySelectorAll('.movie').forEach(movie => {
+  movie.addEventListener('click', () => {
+    const movieId = movie.dataset.movieId; // Assuming each movie element has a 'data-movie-id' attribute
+    getMovieData(movieId);
+  });
+});
+
+
+function displayMovies(movies) {
+    const moviesDiv = document.getElementById('movies');
+
+    movies.forEach(movie => {
+        const movieElement = document.createElement('div');
+        movieElement.classList.add('col-4', 'my-3');
+
+        const movieHtml = `
+            <div class="card">
+                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="card-img-top" alt="${movie.title}">
+                <div class="card-body">
+                    <h5 class="card-title">${movie.title}</h5>
+
+                </div>
+            </div>
+        `;
+
+        movieElement.innerHTML = movieHtml;
+        moviesDiv.appendChild(movieElement);
+    });
+}
+
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("myBtn");
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  
+   </script>
+</html>
